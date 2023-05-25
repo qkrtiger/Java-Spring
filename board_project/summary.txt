@@ -1,0 +1,235 @@
+패스워드 암호화
+  Spring Framework는 비밀번호를 암호화 하는
+  기능을 제공한다.
+  비밀번호는 DB가 크래킹 당해도 노출되지 않도록
+  보호가 필요하다.
+  Spring은 단방향의 암호화 기법을 제공.
+
+  패스워드 암호화 준비물(라이브러리)
+  - spring-security-core
+
+DB 관련 로그 찍기(Log4jdbc)
+  일반적인 로그는 DB 관련 처리에 대한 내용을
+  출력할 수 없음(Mybatis 내부에서 처리되기 때문)
+  Log4jdbc는 DB 관련 처리 중간에서 동작하여
+  해당 로그를 찍을 수 있도록 도와준다.
+
+  라이브러리(pox.xml에 추가)
+  > log4jdbc-log4j2 (mvnrepository.com)
+
+  application.properties 설정
+  ...driver-class-name=net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+  ...url=jdbc:log4jdbc:mysql://127.0...
+
+  resource 폴더에 다음 파일을 추가
+  1) log4jdbc.log4j2.properties : log4jdbc 관련 설정.
+  2) logback.xml : 로그 출력 관련 설정.
+
+  logback.xml의 로그 설정
+  패키지 로그 : 지정된 패키지 하위 클래스에서 출력하는 로그 설정.
+  connection 로그 : DB 접속과 관련된 로그 출력 설정.
+  sqlonly 로그 : 실행한 SQL 문장만 출력하도록 설정.
+  sqltiming 로그 : SQL문장과 실행된 시간을 출력하도록 설정.
+  audit 로그 : ResultSet을 제외한 JDBC 호출 정보를 출력하도록 설정.
+  resultset 로그 : ResultSet을 포함한 JDBC 호출 정보를 출력하도록
+                설정.
+  resultsettable 로그 : SQL 조회 결과를 테이블형식으로 출력하도록
+                설정.
+
+  Log level(로그 단계) - 총 7단계로 구성 -> 사용은 5단계만 사용.
+    1. off - 로그를 찍지 않는다.
+    2. debug - 디버깅 시 확인이 필요한 경우(개발하는 시점)
+    3. info - 정보로서 확인이 필요한 경우
+    4. warn - 경고(warning)로 출력이 필요한 경우
+    5. error - 에러로 처리해야 하는 경우
+    6. fatal - 심각한 에러
+    7. all - 항상 모든 로그를 찍는다.
+
+  Lombok의 로그
+  1) @Log : 간편하게 사용하는 로그.
+            주요 메소드 info("massage")
+            info 레벨의 메시지를 출력.
+            나머지 단계의 메시지 출력은 어려움.
+  2) @Slf4j : 5단계로 구분하여 로그를 출력할 때 사용.
+            debug, info, warn, error, trace 메소드 제공.
+            trace : 추적 레벨. debug보다 상세한 정보를 나타내는
+                    단계. 가장 낮은 단계(많이 사용되지는 않음)
+
+  개발 단계에서는 log를 debug로 작성
+  - @Slf4j 사용 시 : log.debug("출력할 문장");
+  - logback.xml의 level을 debug로 작성.
+  실 서버 운영시 logback.xml의 level을 info, warn 또는 error로
+  상향 설정하면 debug로그는 출력되지 않음.
+
+로그인 처리
+  암호화된 비밀번호를 DB로부터 검색하여
+  사용자가 입력한 비밀번호와 비교하는 작업.
+  사용자가 입력한 비밀번호 -> 평문(plain text)
+  DB에 저장된 비밀번호 -> 암호문(cipher text)
+  두 문자열은 단순 equals 비교가 불가.
+  Spring Security 패스워드 인코더에서 mache 메소드를 사용.
+  이후, 로그인 상황 유지를 위해 로그인 성공 정보를
+  세션(session)에 저장.
+  저장된 로그인 성공 정보는 로그아웃 시점에 제거.
+
+로그인 성공 이후 -> 게시글 목록 페이지로 이동
+  url : list
+  목록 페이지에서 처리할 내용
+  - 접속자(회원 정보) 출력
+  - 게시글 목록 출력
+  - paging 처리
+  - 제목, 내용 검색
+  - 글쓰기 버튼 처리
+
+필요 클래스
+  - BoardDto
+  - SearchDto
+  - BoardController
+  - BoardService
+  - BoardDao
+
+목록 화면의 페이징 처리
+  Pagination(or Paging)
+  다수의 정보를 한 화면에 출력할 때, 출력할 내용의 개수를 제한하고
+  책의 페이지처럼 여러 화면으로 분리하는 방식.
+
+  DB(MySQL)에서 SQL의 LIMIT 구문을 사용하여 한 화면에
+  출력할 데이터를 나눠서 가져오는 방식을 사용.
+
+  페이지의 번호에 pageNum 값을 다르게 링크하는 형식의
+  HTML 태그 코드를 작성.
+  전체 데이터의 양과 한 페이지에 보여질 개수 등의 정보를 가지고,
+  간단한 수식을 사용하여 자동으로 계산하는 객체를 사용하여 처리.
+
+  생성자를 활용하자.
+  Lombok의 @AllArgsConstructor 어노테이션
+  생성자란 객체를 생성할 때 new 키워드 뒤에 호출하는
+  멤버변수(또는 인스턴스) 초기화 메소드
+
+
+File upload
+    HTML의 <input> 태그의 file type은 기본적인
+    파일 선택 창을 제공.
+
+  Multi-part : 한 웹 문서 안에 문자와 바이너리 데이터(이미지,
+        동영상, 음성 및 기타 형식의 파일 등)가 함께 포함되어
+        있는 상황.
+
+    MIME(Multipurpose Internet Mail Extension)
+      전자우편(e-mail)을 위한 인터넷 표준 포맷.
+      content-type : 문서에 포함된 내용을 구성한 형태 지정.
+                기본 형태 - text/plain이나 text/html.
+                다종의 내용이 포함되면 - multipart/...
+
+  Multi-part를 위한 설정(application.properties)
+    업로드 파일 용량 설정
+      - 업로드 파일의 최대 크기 : max-file-size
+      - 요청 객체에 담을 수 있는 최대 크기 : max-request-size
+      (기본값은 각각 10MB.) <- 생략 시
+
+    Spring framework에는 multi-park 라이브러리가 기본 포함되어
+    있기 때문에 추가할 dependency는 없음.
+
+  form 태그에 enctype="multipart/form-data"를 추가.
+  (파일 업로드 처리 시 반드시 필요함.)
+
+  파일 태그는 디자인 변경이 용이하지 않기 때문에 label 태그를
+  사용하여 CSS 처리.(이 때 파일 태그는 숨김 처리)
+  대신 선택한 파일명을 보이기 위해서 js로 파일명을 또 다른
+  input 태그에 출력함.
+  파일이 1개 일 경우 : 파일명을 그대로 출력.
+  파일이 2개 이상일 경우 : '첫번째파일명 외 00개' 로 출력.
+
+  input 태그 file 타입은 'multiple' 속성으로 단일 파일 선택
+  또는 다중 파일 선택을 하도록 설정할 수 있음.
+  ※ multiple과 multi-part는 관계 없음!
+
+  form 태그 내 input 태그에 readonly 속성을 부여하면
+  해당 input 태그는 전송에서 제외된다.(hidden은 전송됨)
+
+  파일을 처리하는 상황
+  1. 한 html 문서에 하나의 file input 태그가 있는 경우
+    1) 단일 파일 전송.
+    2) 다중 파일 전송(multiple 속성을 작성한 경우).
+  2. 한 html 문서에 여러개의 file input 태그가 있는 경우
+    1) 단일 파일 전송.
+    2) 다중 파일 전송(multiple 속성을 작성한 경우).
+    3) 단일 파일 전송과 다중 파일 전송이 혼용된 경우.
+
+  spring의 파일 처리부분을 반복을 중첩하여 처리하는 코드로 작성.
+
+서버에 업로드 파일 저장 방식
+  1) 내용과 파일을 함께 저장
+    BLOB 타입으로 파일을 2진 바이너리 데이터로 처리하여 문자열처럼
+    글 내용과 같이 저장.(문서 중간에 파일이 들어간 형태)
+    예) 블로그 같은 형식.
+    이 방식을 처리하기 위한 에디터가 필요(naver smart editor 등)
+  2) 내용과 파일을 따로 저장
+    내용은 DB로, 파일은 파일 서버나 특정 폴더로 저장.
+    파일의 정보를 저장할 DB 테이블(컬럼)이 필요.
+
+파일 저장 시 파일의 이름를 변경하는 것이 필요하다. (Why?)
+  한 사람이 자신만의 파일을 업로드 한는 것이 아니라,
+  여러 사람이 제각각 파일을 업로드하는데 이 때 파일명이
+  동일한 경우도 발생한다.
+  나중에 업로드한 파일만 존재하고, 이전 파일은 덮어써서
+  없어지게 됨. -> 이름을 변경하여 저장.
+  파일 이름에는 시간(밀리초)을 사용.
+
+파일 정보를 저장할 때 함께 저장하는 데이터(비파일)의 키값이
+외래키로 저장되어야 한다. 문제) 데이터의 키값은 무엇인가?
+
+Mybatis에서 selectKey 기능을 제공.
+insert 처리에서 발생한 자동 생성된 키값을 구하는 용도.
+
+참고) WYSIWYG(What You See Is What You Get)
+  보이는 데로 얻는(처리한)다.
+  한컴 워드, MS-word, 웹용 에디터 등.
+  내용과 다양한 파일(이미지, 영상, 음성 등)을 함께
+  저장/편집할 수 있는 방식.
+
+
+Mybatis에서 키값을 구하는 방법
+  selectKey를 사용한다. selectKey는 강의 자료에..(22p)
+
+HttpSession 사용법
+  로그인 성공 정보나, 사용자가 접속을 한 상황에서 유지해야할
+  데이터가 있을 경우 세션을 사용한다.
+  1) 세션에 데이터 저장
+    session.setAttribute("식별명", 데이터객체);
+  2) 세션에 데이터 삭제(로그 아웃에 활용 가능)
+    session.removeAttribute("식별명");
+  3) 세션에서 데이터 불러오기(형변환 필요)
+    session.getAttribute("식별명");
+  4) 세션 자체를 삭제(로그 아웃 처리 시)
+    session.invalidate();
+
+  세션에 데이터를 갱신(수정)하는 경우 setAttribute를 사용.
+  이 때, 식별명을 같은 값으로 하면 기존 데이터를 덮어쓴다.
+
+  세션에 시간 제한 걸기(톰캣 기본값 30분)
+  session.setMaxInactiveInterval(초);
+  1시간 : 60 * 60
+  정해진 시간 후 session.invalidate()가 실행됨.
+
+HTTP(HyperText Transfer Protocol) 상태 및 해당 코드
+1) 정상(ok) : 200
+2) 파라미터 부족(Bed Request) : 400
+3) 페이지 없음(Page Not Found) : 404
+4) 내부 서버 오류(Server Error) : 500
+
+HTTP 구조
+컴퓨터 네트워크 상의 데이터는 header와 body로 구성.
+header에는 전송되는 데이터를 처리할 때 활용되는 정보가
+포함되며, body에는 데이터가 포함된다.
+header에 포함되는 정보
+  - 상태 정보, content type, 데이터의 크기, 파일 이름 등
+
+오류 페이지 만들기
+ 404, 500 오류 시 보여질 페이지
+ views 폴더 하위에 'error' 폴더 생성 후 다음 페이지 작성.
+ - 페이지 없음 오류용 페이지 - 404.jsp
+ - 프로그램에서 발생되는 오류(Exception)
+    (DB 접속 실패, 파일 처리 등) - 500.jsp
+
+비인가 접속 제어 - SessionInterceptor
