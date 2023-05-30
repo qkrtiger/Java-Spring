@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>수정 양식에서의 thymeleaf</h2>
+<form th:action="@{update}" method="post"
+      th:object="${person}">
+  <input type="text" name="pname" th:value="*{pname}"
+         placeholder="이름 입력"><br>
+  <input type="number" name="age" th:value="*{age}"
+         placeholder="나이 입력"><br>
+  <input type="text" name="phone" th:value="*{phone}"
+         placeholder="연락처 입력"><br>
+  <input type="submit" value="전송">
+</form>
+</body>
+</html>

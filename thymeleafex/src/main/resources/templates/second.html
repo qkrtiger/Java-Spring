@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>두번째 페이지</title>
+</head>
+<body>
+<h1>Thymeleaf 두번째 페이지</h1>
+<p>Session에서 데이터 꺼내기</p>
+<p th:text="${session.id} + '님 반갑습니다.'"></p>
+<p th:text="'Hello world'"></p>
+<p><a th:href="@{logout}">[로그아웃]</a></p>
+<hr>
+<h2>서버로 데이터 전달</h2>
+<form th:action="@{datain}">
+    <input type="text" name="data1"><br>
+    <input type="number" name="data2"><br>
+    <input type="submit" value="전송">
+</form>
+<hr>
+<h2>Dto를 사용하여 데이터 전달</h2>
+<form th:action="@{pinput}" method="post">
+    <input type="text" name="pname" placeholder="이름 입력"><br>
+    <input type="number" name="age" placeholder="나이 입력"><br>
+    <input type="text" name="phone" placeholder="연락처 입력"><br>
+    <input type="submit" value="전송">
+</form>
+</body>
+</html>

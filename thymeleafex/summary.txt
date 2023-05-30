@@ -1,0 +1,109 @@
+Thymeleaf template
+  Spring boot에서 view(HTML)를 처리하는 기본 방식 중 하나.
+  resources/template에 페이지의 틀을 저장하는 방식.
+  jsp 처럼 prefix와 suffix를 설정할 필요가 없으며,
+  webapp/WEB-INF/views 폴더를 만들 필요도 없음.
+  Controller에서 데이터를 전송하는 방식은 동일함.
+  HTML 태그의 형식을 그대로 사용.
+
+html 요소(Element)의 구성 요소
+  <태그명 속성1="속성값1" 속성2="속성값2" ...>  <-- 시작태그
+    내용(content)
+  </태그명>                                  <-- 닫는태그
+
+Thymeleaf 활용법
+  1) templates 폴더에 HTML 문서로 작성.
+  2) <html> 태그에 xmlns:th="http://www.thymeleaf.org"속성 포함.
+
+Thymeleaf의 데이터 출력 방식
+  1) 기본적인 데이터 출력은 EL 형식을 사용 : ${...}
+  2) 링크(url) : @{link} (a 태그나 form 태그의 action 등)
+  3) 객체의 필드(멤버변수) : *{field}
+
+요소에 텍스트 형태로 출력
+1. th:text, th:utext - 요소의 내용으로 출력할 때 사용하는 속성.
+  1) <p th:text="${...}"></p> => innerText 형식
+  2) <p>[[${...}]]</p>        => innerText 형식
+  3) <p th:utext="${...}></p> => innerHTML 형식
+  4) <p>[(${...})]</p>        => innerHTML 형식
+  (innerHTML과 innerText 형식의 차이는 문장 내의 태그 표현)
+2. th:value - input 태그의 초기값으로 출력할 때 사용하는 속성.
+3. th:inline - 자바스크립트 태그에 사용하는 속성.
+    <script th:inline="javascript">...</script>
+4. th:href - 링크 연결 속성(<a> 태그에서 사용)
+    일반 html
+        <a href="test?d1=100&d2=200">전달</a>
+    Thymeleaf
+        <a th:href="@{test(d1=100,d2=200)}">전달</a>
+5. th:action - form 태그의 action 속성과 동일.
+        <form th:action="@{url}">
+6. th:object - Dto와 같은 객체로 데이터를 전송한 경우
+        이 속성에 객체를 지정하고 필드의 데이터는
+        *{필드} 형식으로 가져올 수 있다.
+
+Dto 데이터 처리
+  model.addObject("식별자", dto);
+  -> th:text="${식별자.필드명}"
+  -> th:text="${식별자['필드명']}"
+  -> th:text="${식별자.get필드명()}"
+
+Session에 저장한 데이터 꺼내기
+  식별자 앞에 'session.'을 붙인다.
+  session.setAttribute("식별자", data);
+  -> th:text="${session.식별자}"
+  자바스크립트에서 꺼낼 때
+  let val = [[${session.식별자}]];
+
+
+RedirectAttribute에 저장한 데이터 꺼내기
+  주로 javascript에서 사용함.
+  rttr.addFlashAttribute("식별자", data);
+  -> let 변수 = [[${식별자}]];
+  값이 없으면 null.
+  if(변수 != null) <- 조건식 작성 시 활용
+
+제어용 태그
+  th:block - 제어문 및 객체 설정에 사용하는 태그.
+            일반적으로는 조건식, 반복식 등에 활용.
+            상위 요소가 지정되지 않은 객체의 출력에도 활용.
+th:block을 활용한 제어 속성
+  1) th:if - if문에 해당하는 속성.
+     th:unless - if문의 else에 해당.
+  2) th:switch, th:case - switch, case에 해당하는 속성.
+  3) th:each - for문에 해당하는 속성. for(변수 : 목록)
+        <th:block th:each="변수:${목록}"> ... <th:block>
+        status 항목을 사용하면 반복 상태의 정보를 구할 수 있음.
+        <th:block th:each="변수,status:${목록}">
+        - index : 반복 순번.(0부터 시작)
+        - count : 반복 횟수.(1부터 시작)
+        - odd : 홀수 행인지 확인(홀수행이면 true)
+        - even : 짝수 행인지 확인(짝수행이면 true)
+        - first : 첫번째 행인지 확인(첫 행이면 true)
+        - last : 마지막 행인지 확인(마지막 행이면 true)
+        - size : 총 반복수(요소 수)
+        - current : 현재 반복이 수행되는 요소
+
+    참고) List(목록)의 null 체크 : ${#lists.isEmpty(목록)}
+         객체(DTO)의 null 체크 : ${#object.isNull(dto)}
+
+Thymeleaf 내에서의 연산식 활용
+  1) 산술 연산 : +, -, *, /, %
+  2) 비교 연산 : ==, !=, >, >=, <, <=
+  3) 논리 연산 : &&, ||, !
+  4) 조건 연산 : (조건식) ? A : B
+  5) 기본 표현식(Default Expressions. 또는 Elvis Operator)
+        th:text="${data}?: '값1'"
+            -> data가 null이 아니면 data, null이면 '값1'을 출력
+
+
+참고) 서버 재시작 없이 view 자동 업데이트 처리
+  1) Spring Boot DevTools 포함(프로젝트 생성 시)
+  2) application.properties에 devtools 설정
+  3) File > Setting... 설정
+     - Build, Execution, Deployment > Compiler
+        -> Build project automatically 체크
+     - Advanced Setting
+        -> Allow auto-make to start even if .... 체크
+
+  view에만 해당됨.(java 코드의 수정 반영은 서버 재시작 필요)
+

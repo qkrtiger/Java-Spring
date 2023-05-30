@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>th:if</h2>
+<th:block th:if="${id != null}">
+  <p th:text="${id} + '님 반갑습니다.'"></p>
+</th:block>
+<th:block th:unless="${id != null}">
+  <p>안녕하세요.</p>
+</th:block>
+<h2>th:switch</h2>
+<th:block th:switch="${age/10}">
+    <p th:case="2">당신은 20대 입니다.</p>
+    <p th:case="3">당신은 30대 입니다.</p>
+    <p th:case="4">당신은 40대 입니다.</p>
+</th:block>
+<hr>
+<h2>th:each</h2>
+<ul>
+    <th:block th:if="${#lists.isEmpty(pList)}">
+        <li>출력할 목록이 없습니다.</li>
+    </th:block>
+    <th:block th:unless="${#lists.isEmpty(pList)}">
+        <th:block th:each="item,status:${pList}">
+            <fieldset>
+                <legend th:text="${status.count}"></legend>
+                <li th:text="'이름 : ' + ${item.pname}"></li>
+                <li th:text="'나이 : ' + ${item.age}"></li>
+                <li th:text="'연락처 : ' + ${item.phone}"></li>
+            </fieldset>
+        </th:block>
+    </th:block>
+</ul>
+</body>
+</html>
