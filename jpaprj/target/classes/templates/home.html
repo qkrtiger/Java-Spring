@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<h1>첫 페이지</h1>
+<a th:href="@{writeForm}">[데이터입력]</a>
+<hr>
+<!-- 데이터 목록 -->
+<h2>데이터 목록</h2>
+<table border="1">
+    <thead>
+    <tr>
+        <th width="50">번호</th>
+        <th width="200">문자열</th>
+        <th width="100">숫자</th>
+        <th width="200">날짜와 시간</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th:block th:if="${#lists.isEmpty(jList)}">
+        <tr><td colspan="4">데이터가 없습니다.</td></tr>
+    </th:block>
+    <th:block th:unless="${#lists.isEmpty(jList)}">
+        <th:block th:each="item:${jList}">
+            <tr>
+                <td th:text="${item.code}"></td>
+                <td th:text="${item.strdata}"></td>
+                <td th:text="${item.intdata}"></td>
+                <td th:text="${#dates.format(item.regdate,'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+        </th:block>
+    </th:block>
+    </tbody>
+</table>
+<hr>
+<form th:action="@{search}" method="get">
+    <input type="text" name="keyword" placeholder="검색할 문자열을 입력하세요.">
+    <input type="submit" value="검색">
+</form>
+</body>
+</html>

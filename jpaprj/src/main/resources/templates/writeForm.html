@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>데이터 입력</title>
+</head>
+<body>
+<h1>데이터 입력</h1>
+<form th:action="@{dataProc}" method="post">
+  <input type="text" name="strdata"><br>
+  <input type="number" name="intdata"><br>
+  <input type="submit" value="Send">
+</form>
+</body>
+</html>
