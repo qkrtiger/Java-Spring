@@ -1,0 +1,32 @@
+<div class="top-bar">
+  <div class="content">
+    <img src="images/r-logo.jpg" alt="로고"
+         class="top-left logo" onclick="goHome()" style="cursor:pointer;">
+    <h2 class="top-left">Web Board</h2>
+    <nav class="top-right">
+      <ul>
+        <li class="suc" id="mname">테스트님</li>
+        <li class="suc"><a th:href="@{logout}">Logout</a></li>
+        <li class="bef"><a th:href="@{loginForm}">Login</a></li>
+        <li class="bef"><a th:href="@{joinForm}">Join</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  function goHome() {
+    //1차로 세션에서 mb(MemberDto)를 꺼내고
+    //2차로 mb에서 m_id를 꺼내는 방식으로 처리
+    let mb = [[${session.mb}]];
+    if(mb != null){
+      id = mb.m_id;
+    }
+
+    if(mb == null){//로그인 전
+      location.href = "/";
+    } else {
+      location.href = "list?pageNum=1";
+    }
+  }
+</script>

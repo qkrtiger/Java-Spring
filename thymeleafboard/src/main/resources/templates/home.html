@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Raspberry Board</title>
+    <script src="js/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script th:inline="javascript">
+        $(function () {
+            let m = [[${msg}]];
+            if(m != null){
+                alert(m);
+            }
+
+            //bxSlider 설정용 스크립트
+            $(".slider").bxSlider({
+                auto: true,
+                slideWidth: 600,
+            })
+        });
+    </script>
+</head>
+<body>
+<header>
+    <th:block th:include="header.html"></th:block>
+</header>
+<section>
+    <div class="content-home">
+        <div class="slider">
+            <div><img src="images/Chrysanthemum.jpg"></div>
+            <div><img src="images/Desert.jpg"></div>
+            <div><img src="images/Lighthouse.jpg"></div>
+            <div><img src="images/Tulips.jpg"></div>
+        </div>
+    </div>
+</section>
+<footer>
+    <th:block th:include="footer.html"></th:block>
+</footer>
+</body>
+</html>
