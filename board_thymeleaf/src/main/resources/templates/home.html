@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Raspberry Board</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css">
+    <script th:inline="javascript">
+        $(function(){
+            let m = [[${msg}]]; //msg가 없으면 null.
+            if(m != null){
+                alert(m);
+            }
+
+            //bxSlider 설정용 스크립트
+            $(".slider").bxSlider({
+                auto: true,
+                slideWidth: 600,
+            })
+        });
+    </script>
+</head>
+
+<body>
+<div class="wrap">
+    <header>
+        <th:block th:insert="~{header.html}"></th:block>
+    </header>
+    <section>
+        <div class="content-home">
+            <div class="slider">
+                <div><img th:src="@{images/Chrysanthemum.jpg}"></div>
+                <div><img th:src="@{images/Desert.jpg}"></div>
+                <div><img th:src="@{images/Lighthouse.jpg}"></div>
+                <div><img th:src="@{images/Tulips.jpg}"></div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <th:block th:insert="~{footer.html}"></th:block>
+    </footer>
+</div>
+</body>
+</html>
