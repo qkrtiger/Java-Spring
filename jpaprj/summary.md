@@ -1,4 +1,4 @@
-JPA(Java Persistence API)
+### JPA(Java Persistence API)
     자바 어플리케이션에서 관계형 데이터베이스를 사용하는
     방식을 정의한 인터페이스 관련 API.
 
@@ -21,7 +21,7 @@ application.properties 설정
 - JPA 설정
 - DB log 설정
 
-JPA 초기화 전략 설정(a.k.a JPA 설정)
+### JPA 초기화 전략 설정(a.k.a JPA 설정)
     spring.jpa.generate-ddl : true로 설정하면 해당 데이터를 근거로 서버 시작 시에 DDL문을 생성하여 DB에 적용.
                               DDL 생성 시 데이터베이스 고유의 기능을 사용하는지에 대한 유무 체크.
                               → false로 설정.
@@ -37,7 +37,7 @@ JPA 초기화 전략 설정(a.k.a JPA 설정)
     spring.jpa.database-platform
         각 DBMS에 맞게 SQL을 생성하도록 도와주는 dialect(방언) 객체를 지정.
 
-간단한 테이블 명세
+### 간단한 테이블 명세
 테이블명 : jpatbl
 컬럼 >
     - code : 자동 증가, 기본키
